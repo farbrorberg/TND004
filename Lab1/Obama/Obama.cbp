@@ -33,10 +33,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="include/node.h" />
 		<Unit filename="include/set.h" />
 		<Unit filename="src/main.cpp" />
-		<Unit filename="src/node.cpp" />
 		<Unit filename="src/out.txt" />
 		<Unit filename="src/set.cpp" />
 		<Extensions>

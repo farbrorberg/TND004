@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1460646059 source:h:\tnd004\lab1\obama\src\main.cpp
+1461249237 source:h:\tnd004\lab1\obama\src\main.cpp
 	<iostream>
 	<iomanip>
 	<string>
@@ -11,12 +11,13 @@
 
 1460631284 h:\tnd004\lab1\obama\include\node.h
 
-1460646148 h:\tnd004\lab1\obama\src\set.cpp
+1461249336 h:\tnd004\lab1\obama\src\set.cpp
 	<memory>
 	<iostream>
 	<iomanip>
 
-1460644808 source:h:\tnd004\lab1\obama\src\set.cpp
+1461249216 source:h:\tnd004\lab1\obama\src\set.cpp
 	<memory>
 	<iostream>
+	<iomanip>
 
