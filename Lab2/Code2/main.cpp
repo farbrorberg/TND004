@@ -46,6 +46,7 @@ int main()
         return 0;
     }
 
+
     string s;
     int _count = 0;
 
@@ -61,6 +62,7 @@ int main()
         {
             return (PUNCT.find(c) == string::npos);
         });
+
 
         //if s is not in the table then it is inserted
         freq_table[s1]++;

@@ -82,7 +82,21 @@ public:
 
     //Overloaded subscript operator
     //If key is not in the table then insert a new Item = (key, Value_Type())
-    Value_Type& operator[](const Key_Type& key);
+    Value_Type& operator[](const Key_Type& key)
+    {
+
+        int index = find_element(key);
+
+        if(hTable[index] && hTable[index]->get_key() == key)
+        {
+            return hTable[index]->get_value();
+        }
+
+        hTable[index] = new Item<Key_Type, Value_Type>(key, Value_Type());
+        count_new_items++;
+        nItems++;
+        return hTable[index]->get_value();
+    }
 
 
     //Display all items in table T to stream os
@@ -119,10 +133,10 @@ private:
 
     //Number of items stored in the table
     //Instances of Deleted_Items are not counted
-    unsigned nItems;
+    unsigned nItems = 0;
 
     //Number of slots that are marked as deleted
-    unsigned nDeleted;
+    unsigned nDeleted = 0;
 
     //Table is an array of pointers to Items
     //Each slot of the table stores a pointer to an Item =(key, value)
@@ -136,7 +150,7 @@ private:
     /* ********************************** *
     * Auxiliar member functions           *
     * *********************************** */
-    unsigned find_element(const Key_Type &key) const;
+    unsigned find_element(const Key_Type &key);
 
     //Disable copy constructor!!
     HashTable(const HashTable &) = delete;
@@ -164,7 +178,7 @@ int nextPrime( int n );
 template <typename Key_Type, typename Value_Type>
 HashTable<Key_Type, Value_Type>::HashTable(int table_size, HASH f)
     : h(f), _size(nextPrime(table_size)), hTable(new Item<Key_Type, Value_Type>*[_size]),
-    total_visited_slots(0), count_new_items(0)
+    total_visited_slots(0), count_new_items(0), nItems(0), nDeleted(0)
 {
     for(int i = 0; i < _size; i++)
     {
@@ -192,32 +206,8 @@ template <typename Key_Type, typename Value_Type>
 const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 {
     unsigned index = find_element(key);
-    cout << index;
-    /*unsigned index = h(key, _size);
 
-    total_visited_slots = 0;
-
-
-    if((hTable[index]) && (hTable[index]->get_key() == key))
-    {
-        return &hTable[index]->get_value();
-    }
-    else
-    {
-        index++;
-        total_visited_slots++;
-        while((hTable[index]) && (hTable[index]->get_key() != key) && (total_visited_slots <= _size))
-        {
-            index++;
-            total_visited_slots++;
-            if(index == _size)
-                index = 0;
-        }
-
-        if((hTable[index]) && hTable[index]->get_key() == key)
-            return &hTable[index]->get_value();
-    }*/
-    return nullptr;
+    return &hTable[index]->get_value();
 }
 
 
@@ -227,17 +217,46 @@ const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_Type& v)
 {
+    cout << loadFactor() << endl;
+    if(loadFactor() < 0.1)
+    {
+        int index = find_element(key);
 
-//    if(!_find(key))
-//    {
-
-        unsigned index = h(key, _size);
         hTable[index] = new Item<Key_Type, Value_Type>(key,v);
 
+        count_new_items++;
         nItems++;
+    }
+    else
+    {
+        int old_size = _size;
+        _size = nextPrime(_size+1);
+        cout << "REHASH!!" << endl;
+        cout << _size << endl;
+        cout << loadFactor() << endl;
+
+        Item<Key_Type, Value_Type>** old_table = hTable;
+        hTable = new Item<Key_Type, Value_Type>*[_size];
+
+        for(int i = 0; i < _size; i++)
+        {
+            hTable[i] = nullptr;
+        }
+        for(int i = 0; i < old_size; i++)
+        {
+                            cout << i << endl;
+            _insert(old_table[i]->get_key(), old_table[i]->get_value());
+        }
+                        cout << "hejs";
+        _insert(key,v);
+
+                cout << "hejs2";
+        delete old_table;
+                        cout << "hejs3";
+
+    }
 
 
-//    }
 }
 
 
@@ -247,8 +266,14 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
 template <typename Key_Type, typename Value_Type>
 bool HashTable<Key_Type, Value_Type>::_remove(const Key_Type& key)
 {
-    //IMPLEMENT
 
+    int index = find_element(key);
+
+    if(hTable[index]->get_key() == key)
+    {
+        hTable[index] = Deleted_Item<Key_Type, Value_Type>::get_Item();
+        return true;
+    }
     return false;
 }
 
@@ -291,16 +316,22 @@ void HashTable<Key_Type, Value_Type>::display(ostream& os)
 * *********************************** */
 //Add any if needed
 template <typename Key_Type, typename Value_Type>
-unsigned HashTable<Key_Type, Value_Type>::find_element(const Key_Type &key) const
+unsigned HashTable<Key_Type, Value_Type>::find_element(const Key_Type &key)
 {
 
     unsigned index = h(key, _size);
+    int counter = 0;
+    total_visited_slots++;
 
-    while((hTable[index]) && (hTable[index]->get_key() != key))
+    while((hTable[index]) && (hTable[index]->get_key() != key) && counter <= _size && (hTable[index]->get_key() != ""))
     {
         index++;
         if(index == _size)
+        {
             index = 0;
+        }
+        counter++;
+        total_visited_slots++;
     }
     return index;
 
