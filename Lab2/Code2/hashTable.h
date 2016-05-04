@@ -95,6 +95,13 @@ public:
         hTable[index] = new Item<Key_Type, Value_Type>(key, Value_Type());
         count_new_items++;
         nItems++;
+
+        if(loadFactor() > 0.5)
+        {
+            ReHash();
+            index = find_element(key);
+        }
+
         return hTable[index]->get_value();
     }
 
@@ -150,6 +157,10 @@ private:
     /* ********************************** *
     * Auxiliar member functions           *
     * *********************************** */
+
+
+    void ReHash();
+
     unsigned find_element(const Key_Type &key);
 
     //Disable copy constructor!!
@@ -191,11 +202,11 @@ HashTable<Key_Type, Value_Type>::HashTable(int table_size, HASH f)
 template <typename Key_Type, typename Value_Type>
 HashTable<Key_Type, Value_Type>::~HashTable()
 {
-    /*for(int i = 0; i < _size; i++)
-    {
-        if(hTable[i])
-            delete hTable[i];
-    }*/
+//    for(int i = 0; i < _size; i++)
+//    {
+//        if(hTable[i])
+//            delete hTable[i];
+//    }
     delete [] hTable;
 }
 
@@ -217,46 +228,58 @@ const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_Type& v)
 {
-    cout << loadFactor() << endl;
-    if(loadFactor() < 0.1)
-    {
+
+
         int index = find_element(key);
 
-        hTable[index] = new Item<Key_Type, Value_Type>(key,v);
+        if(hTable[index] && hTable[index]->get_key() == key)
+        {
+            hTable[index]->get_value() = v;
+        }
+        else
+        {
+            hTable[index] = new Item<Key_Type, Value_Type>(key,v);
 
-        count_new_items++;
-        nItems++;
-    }
-    else
-    {
+            count_new_items++;
+            nItems++;
+
+            if(loadFactor() > 0.5)
+            {
+                ReHash();
+            }
+        }
+}
+
+template <typename Key_Type, typename Value_Type>
+void HashTable<Key_Type, Value_Type>::ReHash()
+{
         int old_size = _size;
-        _size = nextPrime(_size+1);
-        cout << "REHASH!!" << endl;
-        cout << _size << endl;
-        cout << loadFactor() << endl;
+        while(loadFactor() > 0.5)
+        {
+            _size = nextPrime(_size*2);
+        }
 
         Item<Key_Type, Value_Type>** old_table = hTable;
         hTable = new Item<Key_Type, Value_Type>*[_size];
+        count_new_items++;
 
         for(int i = 0; i < _size; i++)
         {
             hTable[i] = nullptr;
         }
+        nItems = 0;
+        nDeleted = 0;
         for(int i = 0; i < old_size; i++)
         {
-                            cout << i << endl;
-            _insert(old_table[i]->get_key(), old_table[i]->get_value());
+            if(old_table[i] != nullptr && old_table[i]->get_key() != "")
+            {
+                hTable[find_element(old_table[i]->get_key())] = old_table[i];
+                old_table[i] = nullptr;
+                nItems++;
+            }
         }
-                        cout << "hejs";
-        _insert(key,v);
 
-                cout << "hejs2";
-        delete old_table;
-                        cout << "hejs3";
-
-    }
-
-
+        delete *old_table;
 }
 
 
@@ -318,9 +341,10 @@ void HashTable<Key_Type, Value_Type>::display(ostream& os)
 template <typename Key_Type, typename Value_Type>
 unsigned HashTable<Key_Type, Value_Type>::find_element(const Key_Type &key)
 {
-
     unsigned index = h(key, _size);
+
     int counter = 0;
+
     total_visited_slots++;
 
     while((hTable[index]) && (hTable[index]->get_key() != key) && counter <= _size && (hTable[index]->get_key() != ""))

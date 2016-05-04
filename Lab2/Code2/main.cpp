@@ -29,7 +29,7 @@ unsigned _hash(string s, int tableSize);
 
 int main()
 {
-    HashTable<string,int> freq_table(100, _hash);
+    HashTable<string,int> freq_table(80000, _hash);
 
     string name;
 
@@ -118,3 +118,4 @@ unsigned _hash(string s, int tableSize)
 
     return hashVal;
 }
+
