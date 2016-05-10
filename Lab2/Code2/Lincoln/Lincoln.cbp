@@ -33,7 +33,7 @@
 		</Compiler>
 		<Unit filename="../Item.h" />
 		<Unit filename="../hashTable.h" />
-		<Unit filename="../test.cpp" />
+		<Unit filename="../main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
