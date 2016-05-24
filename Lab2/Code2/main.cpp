@@ -89,6 +89,9 @@ int main()
     cout << "Average Number of slots visited = "
          << fixed << setprecision(2) << (double)total / _count << endl;
 
+    cout << "Nr of re-hashes = "
+         << freq_table.get_nr_of_rehashes() << endl;
+
 
     file_out << "Frequency table ..." << endl << endl;
 

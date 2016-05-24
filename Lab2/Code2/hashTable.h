@@ -63,6 +63,11 @@ public:
         return count_new_items;
     }
 
+    unsigned get_nr_of_rehashes() const
+    {
+        return nRehashes;
+    }
+
 
     //Return a pointer to the value associated with key
     //If key does not exist in the table then nullptr is returned
@@ -96,13 +101,16 @@ public:
         count_new_items++;
         nItems++;
 
-        if(loadFactor() > 0.5)
+        Value_Type& v = hTable[index]->get_value();
+
+        if(loadFactor() > MAX_LOAD_FACTOR)
         {
             ReHash();
-            index = find_element(key);
+            nRehashes++;
+            //index = find_element(key);
         }
 
-        return hTable[index]->get_value();
+        return v; //hTable[index]->get_value();
     }
 
 
@@ -144,6 +152,8 @@ private:
 
     //Number of slots that are marked as deleted
     unsigned nDeleted = 0;
+
+    unsigned nRehashes = 0;
 
     //Table is an array of pointers to Items
     //Each slot of the table stores a pointer to an Item =(key, value)
@@ -202,11 +212,11 @@ HashTable<Key_Type, Value_Type>::HashTable(int table_size, HASH f)
 template <typename Key_Type, typename Value_Type>
 HashTable<Key_Type, Value_Type>::~HashTable()
 {
-//    for(int i = 0; i < _size; i++)
-//    {
-//        if(hTable[i])
-//            delete hTable[i];
-//    }
+    for(int i = 0; i < _size; i++)
+    {
+        //if(hTable[i])
+            delete hTable[i];
+    }
     delete [] hTable;
 }
 
@@ -218,7 +228,7 @@ const Value_Type* HashTable<Key_Type, Value_Type>::_find(const Key_Type& key)
 {
     unsigned index = find_element(key);
 
-    return &hTable[index]->get_value();
+    return &hTable[index]->get_value(); //attention to dereference a null pointer
 }
 
 
@@ -243,9 +253,10 @@ void HashTable<Key_Type, Value_Type>::_insert(const Key_Type& key, const Value_T
             count_new_items++;
             nItems++;
 
-            if(loadFactor() > 0.5)
+            if(loadFactor() > MAX_LOAD_FACTOR)
             {
                 ReHash();
+                nRehashes++;
             }
         }
 }
@@ -254,7 +265,7 @@ template <typename Key_Type, typename Value_Type>
 void HashTable<Key_Type, Value_Type>::ReHash()
 {
         int old_size = _size;
-        while(loadFactor() > 0.5)
+        //while(loadFactor() > 0.5)
         {
             _size = nextPrime(_size*2);
         }
@@ -271,7 +282,7 @@ void HashTable<Key_Type, Value_Type>::ReHash()
         nDeleted = 0;
         for(int i = 0; i < old_size; i++)
         {
-            if(old_table[i] != nullptr && old_table[i]->get_key() != "")
+            if(old_table[i] != nullptr && old_table[i] != Deleted_Item<Key_Type, Value_Type>::get_Item() )
             {
                 hTable[find_element(old_table[i]->get_key())] = old_table[i];
                 old_table[i] = nullptr;
@@ -343,18 +354,19 @@ unsigned HashTable<Key_Type, Value_Type>::find_element(const Key_Type &key)
 {
     unsigned index = h(key, _size);
 
-    int counter = 0;
+
 
     total_visited_slots++;
 
-    while((hTable[index]) && (hTable[index]->get_key() != key) && counter <= _size && (hTable[index]->get_key() != ""))
+    while( (hTable[index]) && (hTable[index]->get_key() != key)  &&
+            (hTable[index] != Deleted_Item<Key_Type, Value_Type>::get_Item()))
     {
         index++;
         if(index == _size)
         {
             index = 0;
         }
-        counter++;
+
         total_visited_slots++;
     }
     return index;
