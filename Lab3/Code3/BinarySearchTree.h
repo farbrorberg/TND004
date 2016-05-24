@@ -28,6 +28,7 @@ template <typename Comparable>
 class BinarySearchTree
 {
   public:
+
     BinarySearchTree( ) : root{ nullptr }
     {
     }
@@ -103,10 +104,11 @@ class BinarySearchTree
     /**
      * Returns true if x is found in the tree.
      */
-    bool contains( const Comparable & x ) const
-    {
-        return contains( x, root );
-    }
+     //FOR test1.cpp & test2.cpp
+//    bool contains( const Comparable & x ) const
+//    {
+//        return contains( x, root );
+//    }
 
     /**
      * Test if the tree is logically empty.
@@ -240,6 +242,87 @@ class BinarySearchTree
     shared_ptr<BinaryNode> root;
 //    BinaryNode *root;
 
+  public:
+    /**************************BiIterator ********************************/
+    class BiIterator
+    {
+    public:
+        BinarySearchTree tree;
+        //Default constructor
+        BiIterator():current(nullptr){}
+        //Constructor
+        BiIterator(shared_ptr<BinaryNode> ptr):current(ptr){}
+
+        //Returns dereferenced value stored in the Node pointed to by the iterator
+        const Comparable& operator*() const
+        {
+            if(current)
+                return current->element;
+
+                return Comparable();
+        }
+
+        //Returns pointer to value stored in the Node pointed to by the iterator
+        Comparable* operator->() const {return &(current->element);}
+
+        bool operator==(const BiIterator &it) const {return this->current == it.current;}
+
+        bool operator!=(const BiIterator &it) const {return !(*this == it);}
+
+        BiIterator operator++()
+        {
+            if(!current)
+            {
+                return *this;
+            }
+
+            if(current->right)
+            {
+                current = tree.findMin(current->right);
+                return *this;
+            }
+
+
+            while(!(current == current->parent.lock()->left))
+            {
+                current = current->parent.lock();
+            }
+            current = current->parent.lock();
+
+            return *this;
+        }
+
+
+
+    private:
+        shared_ptr<BinaryNode> current;
+    };
+    /********************************************************************/
+
+    BiIterator end() const
+    {
+        return BiIterator();
+    }
+
+    BiIterator begin() const
+    {
+        //BiIterator it(root);
+
+        shared_ptr<BinaryNode> ptr (root);
+        while(ptr->left)
+        {
+            ptr = ptr->left;
+        }
+
+        return BiIterator (ptr);
+    }
+
+    BiIterator contains( const Comparable & x ) const
+    {
+        return contains( x, root );
+    }
+
+    private:
     void preOrder(shared_ptr<BinaryNode>  t,  ostream & out ) const
     {
         while(t)
@@ -338,6 +421,7 @@ class BinarySearchTree
      * Internal method to find the smallest item in a subtree t.
      * Return node containing the smallest item.
      */
+     public:
     shared_ptr<BinaryNode> findMin( shared_ptr<BinaryNode> t ) const
     {
         if( t == nullptr )
@@ -346,6 +430,7 @@ class BinarySearchTree
             return t;
         return findMin( t->left );
     }
+    private:
 
     /**
      * Internal method to find the largest item in a subtree t.
@@ -365,16 +450,30 @@ class BinarySearchTree
      * x is item to search for.
      * t is the node that roots the subtree.
      */
-    bool contains( const Comparable & x, shared_ptr<BinaryNode> t ) const
+          //FOR test1.cpp & test2.cpp
+//    bool contains( const Comparable & x, shared_ptr<BinaryNode> t ) const
+//    {
+//        if( t == nullptr )
+//            return false;
+//        else if( x < t->element )
+//            return contains( x, t->left );
+//        else if( t->element < x )
+//            return contains( x, t->right );
+//        else
+//            return true;    // Match
+//    }
+
+    BiIterator contains( const Comparable & x, shared_ptr<BinaryNode> t ) const
     {
+
         if( t == nullptr )
-            return false;
+            return BiIterator();
         else if( x < t->element )
             return contains( x, t->left );
         else if( t->element < x )
             return contains( x, t->right );
         else
-            return true;    // Match
+            return BiIterator(t);    // Match
     }
 /****** NONRECURSIVE VERSION*************************
     bool contains( const Comparable & x, shared_ptr<BinaryNode> t ) const

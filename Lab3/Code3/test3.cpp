@@ -50,20 +50,21 @@ int main( )
         cout << *it << endl;
     }
 
+
     cout << endl;
 
-    /**************************************/
-    cout << "PHASE 3: BiIterator, operator--\n\n";
-    /**************************************/
-
-    string largest = T.findMax( );
-
-    for(auto it = T.contains( largest ); it != T.end(); --it)
-    {
-        cout << *it << endl;
-    }
-
-    cout << "\nFinished testing" << endl;
+//    /**************************************/
+//    cout << "PHASE 3: BiIterator, operator--\n\n";
+//    /**************************************/
+//
+//    string largest = T.findMax( );
+//
+//    for(auto it = T.contains( largest ); it != T.end(); --it)
+//    {
+//        cout << *it << endl;
+//    }
+//
+//    cout << "\nFinished testing" << endl;
 
     return 0;
 }
