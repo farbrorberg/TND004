@@ -1,0 +1,47 @@
+# depslib dependency file v1.0
+1464259527 source:h:\tnd004-datastrukturer\lab4\lab4b_2\dsets.cpp
+	<iostream>
+	<iomanip>
+	<stack>
+	<cassert>
+	"dsets.h"
+
+1464243478 h:\tnd004-datastrukturer\lab4\lab4b_2\dsets.h
+
+1464243478 source:h:\tnd004-datastrukturer\lab4\lab4b_2\edge.cpp
+	<iostream>
+	<iomanip>
+	"edge.h"
+
+1464243478 h:\tnd004-datastrukturer\lab4\lab4b_2\edge.h
+	<utility>
+
+1464243479 source:h:\tnd004-datastrukturer\lab4\lab4b_2\list.cpp
+	<iostream>
+	<iomanip>
+	"list.h"
+
+1464243479 h:\tnd004-datastrukturer\lab4\lab4b_2\list.h
+
+1464243479 source:h:\tnd004-datastrukturer\lab4\lab4b_2\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<cstdlib>
+	"graph.h"
+
+1464243478 h:\tnd004-datastrukturer\lab4\lab4b_2\graph.h
+	"list.h"
+
+1464258544 source:h:\tnd004-datastrukturer\lab4\lab4b_2\graph.cpp
+	<iostream>
+	<iomanip>
+	<cassert>
+	"graph.h"
+	"edge.h"
+	"heap.h"
+	"dsets.h"
+
+1464243479 h:\tnd004-datastrukturer\lab4\lab4b_2\heap.h
+	<cassert>
+

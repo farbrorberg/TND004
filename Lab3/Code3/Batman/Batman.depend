@@ -4,7 +4,7 @@
 	<vector>
 	"BinarySearchTree.h"
 
-1464083455 h:\tnd004\lab3\code3\binarysearchtree.h
+1464167794 h:\tnd004\lab3\code3\binarysearchtree.h
 	"dsexceptions.h"
 	<algorithm>
 	<memory>
@@ -17,7 +17,7 @@
 	<vector>
 	"BinarySearchTree.h"
 
-1464082593 source:h:\tnd004\lab3\code3\test3.cpp
+1464166910 source:h:\tnd004\lab3\code3\test3.cpp
 	<iostream>
 	<vector>
 	<iterator>

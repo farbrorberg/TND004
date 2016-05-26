@@ -2,8 +2,10 @@
 #include <vector>
 #include <iterator>
 #include <fstream>
+#include <iomanip>
 
 #include "BinarySearchTree.h"
+#include "Word.h"
 
 using namespace std;
 
@@ -53,18 +55,45 @@ int main( )
 
     cout << endl;
 
-//    /**************************************/
-//    cout << "PHASE 3: BiIterator, operator--\n\n";
-//    /**************************************/
-//
-//    string largest = T.findMax( );
-//
-//    for(auto it = T.contains( largest ); it != T.end(); --it)
-//    {
-//        cout << *it << endl;
-//    }
-//
-//    cout << "\nFinished testing" << endl;
+    /**************************************/
+    cout << "PHASE 3: BiIterator, operator--\n\n";
+    /**************************************/
+
+    string largest = T.findMax( );
+
+    for(auto it = T.contains( largest ); it != T.end(); --it)
+    {
+        cout << *it << endl;
+    }
+
+    cout << "\nFinished testing" << endl;
+
+
+    /**************************************/
+    cout << "PHASE 4: Frequency Table" << endl;
+    /**************************************/
+
+    BinarySearchTree<Word> T2;
+
+    BinarySearchTree<Word>::BiIterator word_it;
+    for(auto j: V1)
+    {
+        Word temp_word(j,-1);
+        word_it = T2.contains(temp_word);
+        if(word_it != BinarySearchTree<Word>::BiIterator())
+            word_it->counter++;
+        else
+            T2.insert( Word(j,1) );
+
+    }
+
+    Word smallest = T2.findMin( );
+    for(auto it = T2.contains( smallest ); it != T2.end(); ++it)
+    {
+        cout << setw(14) << it->key <<  "\t";
+        cout << it->counter << endl;
+    }
+
 
     return 0;
 }

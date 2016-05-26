@@ -247,7 +247,6 @@ class BinarySearchTree
     class BiIterator
     {
     public:
-        BinarySearchTree tree;
         //Default constructor
         BiIterator():current(nullptr){}
         //Constructor
@@ -269,6 +268,7 @@ class BinarySearchTree
 
         bool operator!=(const BiIterator &it) const {return !(*this == it);}
 
+        //PRE-INCREMENT OPERATOR
         BiIterator operator++()
         {
             if(!current)
@@ -278,12 +278,12 @@ class BinarySearchTree
 
             if(current->right)
             {
-                current = tree.findMin(current->right);
+                current = findMin(current->right);
                 return *this;
             }
 
 
-            while(!(current == current->parent.lock()->left))
+            while(!current->parent.expired() && !(current == current->parent.lock()->left))
             {
                 current = current->parent.lock();
             }
@@ -291,8 +291,78 @@ class BinarySearchTree
 
             return *this;
         }
+        //POST-INCREMENT OPERATOR
+        BiIterator operator++(int)
+        {
+            BiIterator *it = this;
+            if(!current)
+            {
+                return *it;
+            }
+
+            if(current->right)
+            {
+                current = findMin(current->right);
+                return *it;
+            }
 
 
+            while(!current->parent.expired() && !(current == current->parent.lock()->left))
+            {
+                current = current->parent.lock();
+            }
+            current = current->parent.lock();
+
+            return *it;
+        }
+
+        //PRE-DECREMENT OPERATOR
+        BiIterator operator--()
+        {
+            if(!current)
+            {
+                return *this;
+            }
+
+            if(current->left)
+            {
+                current = findMax(current->left);
+                return current;
+            }
+
+            while(!current->parent.expired() && !(current == current->parent.lock()->right))
+            {
+                current = current->parent.lock();
+            }
+            current = current->parent.lock();
+
+            return *this;
+
+        }
+
+        //POST-DECREMENT OPERATOR
+        BiIterator operator--(int)
+        {
+            BiIterator *it = this;
+            if(!current)
+            {
+                return *it;
+            }
+
+            if(current->left)
+            {
+                current = findMax(current->left);
+                return *it;
+            }
+
+            while(!current->parent.expired() && !(current == current->parent.lock()->right))
+            {
+                current = current->parent.lock();
+            }
+            current = current->parent.lock();
+
+            return *it;
+        }
 
     private:
         shared_ptr<BinaryNode> current;
@@ -421,8 +491,7 @@ class BinarySearchTree
      * Internal method to find the smallest item in a subtree t.
      * Return node containing the smallest item.
      */
-     public:
-    shared_ptr<BinaryNode> findMin( shared_ptr<BinaryNode> t ) const
+    static shared_ptr<BinaryNode> findMin( shared_ptr<BinaryNode> t )
     {
         if( t == nullptr )
             return nullptr;
@@ -430,13 +499,12 @@ class BinarySearchTree
             return t;
         return findMin( t->left );
     }
-    private:
 
     /**
      * Internal method to find the largest item in a subtree t.
      * Return node containing the largest item.
      */
-    shared_ptr<BinaryNode> findMax( shared_ptr<BinaryNode> t ) const
+    static shared_ptr<BinaryNode> findMax( shared_ptr<BinaryNode> t )
     {
         if( t != nullptr )
             while( t->right != nullptr )
@@ -540,5 +608,7 @@ class BinarySearchTree
         return nullptr;
     }
 };
+
+
 
 #endif
